@@ -1,14 +1,14 @@
 import { defineConfig } from "vitest/config";
 
 // No network and no database: the Telia dialect runs against the in-process
-// double; the one test that talks to the mock IdP of docker compose skips
-// itself when the mock is not up.
+// double; the one test that talks to the mock bank of Kuutti's docker compose skips
+// itself when the mock is not up (`pnpm env:up` in kuutti-ry/kuutti-app).
 export default defineConfig({
   test: {
     include: ["src/**/*.test.ts"],
     environment: "node",
     testTimeout: 30_000,
-    // `pnpm test:coverage`; CI's compose job runs it with the mock IdP up.
+    // `pnpm test:coverage`, in CI too; the floors are the kit's own.
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],

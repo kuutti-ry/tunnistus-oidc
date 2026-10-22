@@ -370,7 +370,7 @@ describe("the double's other answers, through the client", () => {
       const fetch: TunnistusClientOptions["fetch"] = async (url, init) => {
         const response = await telia.fetch(url, init);
         if (!url.endsWith("/.well-known/openid-configuration")) return response;
-        const document = await response.json();
+        const document = (await response.json()) as Record<string, unknown>;
         return Response.json({ ...document, token_endpoint_auth_methods_supported: methods });
       };
       await expect(

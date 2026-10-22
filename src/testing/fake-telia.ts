@@ -30,7 +30,7 @@ export const TELIA_JWKS = `${TELIA_ISSUER}/oauth2/metadata.jwks`;
 export const LOATEST2 = "http://ftn.ficora.fi/2017/loatest2";
 export const AKTIA = "https://tunnistus-pp.telia.fi/uas/saml2/names/ac/oidc.aktia.1";
 export const CLIENT_ASSERTION_TYPE = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
-/** The levels and methods the double takes in acr_values (Telia publishes no list). */
+/** The levels and methods the double takes in acr_values: a few of guide 2.4.3's list (the discovery document publishes none). */
 const ACR_VALUES_SUPPORTED = [LOATEST2, "mpki.telia.emulator.1", "oidc.aktia.1"];
 
 /** Guide 2.6.4: what an FTN method returns for a Finnish person (a test code, not a real one). */
@@ -70,6 +70,8 @@ type Seen = {
 
 export type FakeTelia = {
   fetch: client.CustomFetch;
+  /** The pre-production issuer the double answers under: with `clientId`, the keys and `fetch`, what `createTunnistusClient` takes. */
+  issuer: string;
   clientId: string;
   redirectUri: string;
   signingKeyPem: string;
@@ -98,7 +100,8 @@ export async function fakeTelia(options: { person?: Person } = {}): Promise<Fake
   let teliaSig = await generateKeyPair("RS256", { extractable: true });
   let teliaKid = "telia-2026-1";
   // Telia names the client's enc key by the kid of the JWK it registered
-  // (guide 2.6.3, confirmed 2026-10-08); the kit's is the RFC 7638 thumbprint.
+  // (Telia's answer of 2026-10-08; guide 2.6.3 says only that the token is
+  // encrypted with the client's public key); the kit's is the RFC 7638 thumbprint.
   const clientEncKid = await calculateJwkThumbprint(await exportJWK(clientEnc.publicKey));
 
   const pending = new Map<
@@ -113,11 +116,12 @@ export async function fakeTelia(options: { person?: Person } = {}): Promise<Fake
         new Request(url, {
           method: init.method,
           headers: init.headers,
-          body: (init.body ?? null) as BodyInit | null,
+          body: (init.body ?? null) as RequestInit["body"],
           redirect: init.redirect,
           signal: init.signal ?? null,
         }),
       ),
+    issuer: TELIA_ISSUER,
     clientId,
     redirectUri,
     signingKeyPem: await exportPKCS8(clientSig.privateKey),

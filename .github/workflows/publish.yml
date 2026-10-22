@@ -1,0 +1,111 @@
+name: Publish
+
+# The kit goes to npm as @kuutti-ry/tunnistus-oidc on a tag vX.Y.Z
+# (RELEASING.md). Two jobs, so that nothing from the registry or the repository
+# runs where the authority to publish is. `check` refuses a tag that does not
+# name package.json's version, a changelog without a dated entry for it and a
+# commit that is not on main; then it typechecks, tests, builds and checks the
+# packed tarball as a consumer sees it (an npm install from the registry, with
+# lifecycle scripts off) and hands the tarball on as an artifact. `publish`
+# waits at the `npm` environment for the maintainer's approval, checks nothing
+# out, takes that one artifact and publishes it by npm trusted publishing: npm
+# exchanges the job's OIDC token itself, no token is stored here, and the
+# registry records provenance naming this repository, this workflow and the
+# commit. No cache is restored: a release builds from the lockfile and the
+# registry alone.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check the tag, the package and its tarball
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      published: ${{ steps.version.outputs.published }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The whole history: the tagged commit must be on main.
+          fetch-depth: 0
+
+      - name: Enable pnpm
+        run: corepack enable
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      - name: The tag names package.json's version, dated in the changelog, on main
+        id: version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(jq -r .version package.json)"
+          if [ "$TAG" != "v$version" ]; then
+            echo "the tag is $TAG, but package.json says $version" >&2
+            exit 1
+          fi
+          if ! grep -Eq "^## \[$version\] - [0-9]{4}-[0-9]{2}-[0-9]{2}$" CHANGELOG.md; then
+            echo "CHANGELOG.md has no dated entry '## [$version] - YYYY-MM-DD'" >&2
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "the tagged commit $GITHUB_SHA is not on main" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if npm view "@kuutti-ry/tunnistus-oidc@$version" version >/dev/null 2>&1; then
+            echo "@kuutti-ry/tunnistus-oidc@$version is on npm already; nothing will be published"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm check:tarball -- --out "$RUNNER_TEMP/tarball"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: tarball
+          path: ${{ runner.temp }}/tarball/kuutti-ry-tunnistus-oidc-${{ steps.version.outputs.version }}.tgz
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    name: publish to npm
+    needs: check
+    if: needs.check.outputs.published != 'true'
+    runs-on: ubuntu-24.04-arm
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # Node 24 for its npm 11: trusted publishing needs npm 11.5.1 or later,
+      # and Node 22 ships npm 10. No checkout: the tarball is all this job needs.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: tarball
+          path: ${{ runner.temp }}/tarball
+
+      - name: Publish the checked tarball with provenance
+        env:
+          VERSION: ${{ needs.check.outputs.version }}
+        run: |
+          # npm exchanges the job's OIDC token itself (trusted publishing) and
+          # reads ACTIONS_ID_TOKEN_REQUEST_URL to do it; without the variable
+          # there is nothing to publish with, so say so before npm tries.
+          : "${ACTIONS_ID_TOKEN_REQUEST_URL:?the job has no OIDC token (id-token: write)}"
+          npm --version
+          npm publish "$RUNNER_TEMP/tarball/kuutti-ry-tunnistus-oidc-$VERSION.tgz" --provenance --access public
+          npm view "@kuutti-ry/tunnistus-oidc@$VERSION" version dist.attestations.url

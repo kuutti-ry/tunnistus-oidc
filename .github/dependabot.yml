@@ -1,0 +1,28 @@
+version: 2
+
+# Monthly, and a release is proposed only once it is seven days old (cooldown;
+# GitHub's default is three): most malicious releases are found and pulled
+# within days. Security updates skip both and open when the alert does. What
+# is added by hand meets pnpm's one-day minimumReleaseAge (pnpm-workspace.yaml).
+updates:
+  # Actions are pinned to commit SHAs; Dependabot bumps the SHA and the version comment together.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  # Minor and patch bumps arrive as one pull request a month; majors come alone so they get read.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    cooldown:
+      default-days: 7
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]

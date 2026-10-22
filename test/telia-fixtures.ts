@@ -1,3 +1,4 @@
+import type { webcrypto } from "node:crypto";
 import {
   base64url,
   CompactEncrypt,
@@ -66,7 +67,7 @@ export function documentedDiscovery(issuer: string = ISSUER): Record<string, unk
   };
 }
 
-type Pair = CryptoKeyPair;
+type Pair = webcrypto.CryptoKeyPair;
 
 export type Keys = {
   /** Ours: the `sig` key signs request objects and client assertions, the `enc` key receives the ID token. */
@@ -162,12 +163,12 @@ const segment = (value: unknown) => base64url.encode(encoder.encode(JSON.stringi
 export type IdTokenOptions = {
   /** Merged over the JWS header `{ alg: RS256, kid: Telia's, typ: JWT }`. */
   jwsHeader?: Record<string, unknown>;
-  signWith?: CryptoKey;
+  signWith?: webcrypto.CryptoKey;
   /** A JWS assembled by hand (any alg, any signature), for what jose would refuse to sign. */
   rawJws?: { header: Record<string, unknown>; signature: string };
   /** False sends the JWS in the clear; otherwise merged over `{ alg: RSA-OAEP, enc: A128CBC-HS256, cty: JWT, kid: our enc key's }`. */
   jweHeader?: Record<string, unknown> | false;
-  encryptTo?: CryptoKey;
+  encryptTo?: webcrypto.CryptoKey;
   /** What the JWE carries instead of the JWS. */
   plaintext?: string;
 };

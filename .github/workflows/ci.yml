@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: typecheck, lint, test, tarball
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Corepack first, so that setup-node can size the pnpm store cache.
+      - name: Enable pnpm
+        run: corepack enable
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - name: No private key in tracked files
+        run: |
+          if git grep -nE 'BEGIN [A-Z ]*PRIVATE KEY' -- ':!.github/workflows/ci.yml'; then
+            echo "::error::a private key is tracked" >&2
+            exit 1
+          fi
+          echo "no private key in tracked files"
+      # The floors are vitest.config.ts's. The test against Kuutti's mock bank
+      # skips itself here, and the live contract test runs only when asked.
+      - run: pnpm test:coverage
+      # The package as a consumer sees it: built, packed, installed with npm
+      # outside the repository, the README's login run from the installed
+      # files, a consumer type-checked under nodenext.
+      - run: pnpm check:tarball
