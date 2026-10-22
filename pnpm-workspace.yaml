@@ -1,0 +1,5 @@
+# pnpm's settings for this one-package repository (pnpm 10 and later read them here).
+
+# Supply chain: a version must be at least one day old before pnpm installs it
+# (pnpm's default, stated explicitly). Exclusions are a decision, not a convenience.
+minimumReleaseAge: 1440

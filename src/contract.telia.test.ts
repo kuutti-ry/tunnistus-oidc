@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { randomBytes, type webcrypto } from "node:crypto";
 import {
   calculateJwkThumbprint,
   compactDecrypt,
@@ -124,7 +124,7 @@ describe("what we send is what Telia documents", () => {
   let telia: FakeTelia;
   let client: TunnistusClient;
   let sent: Sent;
-  let signingKey: CryptoKey;
+  let signingKey: webcrypto.CryptoKey;
 
   beforeAll(async () => {
     telia = await fakeTelia();
@@ -137,7 +137,7 @@ describe("what we send is what Telia documents", () => {
   async function requestObject(
     claims: Record<string, unknown> = {},
     header: Record<string, unknown> = { alg: "RS256", typ: "JWT" },
-    key: CryptoKey = signingKey,
+    key: webcrypto.CryptoKey = signingKey,
   ): Promise<string> {
     const now = nowSeconds();
     return new SignJWT({
@@ -384,7 +384,7 @@ describe("what we send is what Telia documents", () => {
 
     async function assertion(
       claims: Record<string, unknown> = {},
-      key: CryptoKey = signingKey,
+      key: webcrypto.CryptoKey = signingKey,
     ): Promise<string> {
       const now = nowSeconds();
       return new SignJWT({

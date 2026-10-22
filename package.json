@@ -1,29 +1,65 @@
 {
-  "name": "@kuutti/tunnistus-oidc",
+  "name": "@kuutti-ry/tunnistus-oidc",
   "version": "0.1.0",
-  "private": true,
   "description": "Telia Tunnistus relying-party kit for Node: the OpenID Connect client the broker's integration guide asks for (signed request object, private_key_jwt, encrypted ID token), discovery, key helpers, the Finnish personal identity code format, and an in-process test double of the broker.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuutti-ry/tunnistus-oidc.git"
+  },
+  "homepage": "https://github.com/kuutti-ry/tunnistus-oidc#readme",
+  "bugs": "https://github.com/kuutti-ry/tunnistus-oidc/issues",
+  "keywords": [
+    "telia",
+    "tunnistus",
+    "finnish-trust-network",
+    "ftn",
+    "openid-connect",
+    "oidc",
+    "strong-authentication",
+    "henkilotunnus",
+    "hetu"
+  ],
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./hetu": "./src/hetu.ts",
-    "./testing": "./src/testing/fake-telia.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./hetu": {
+      "types": "./dist/hetu.d.ts",
+      "default": "./dist/hetu.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/fake-telia.d.ts",
+      "default": "./dist/testing/fake-telia.js"
+    }
   },
   "files": [
-    "src",
+    "dist",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=22.18"
   },
+  "packageManager": "pnpm@12.4.1+sha512.2e81e399d73fe8390dab25e06aa788ab7a5908248d2f5a370f82b481147a6a7a367bf8048f9a6fdb6460f21a66f0542dedb8b94ca2c8723596741920b1656d4c",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "biome check .",
+    "format": "biome format --write .",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "build": "node scripts/build.ts",
+    "prepack": "node scripts/build.ts",
+    "check:tarball": "node scripts/check-tarball.ts"
   },
   "dependencies": {
     "jose": "^6.2.12",
@@ -39,11 +75,12 @@
     }
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.15",
     "@types/node": "^22.20.5",
-    "@vitest/coverage-v8": "catalog:",
+    "@vitest/coverage-v8": "^5.0.3",
     "fast-check": "^4.10.2",
     "hono": "^4.13.13",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.3"
   }
 }

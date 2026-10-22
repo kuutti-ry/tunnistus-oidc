@@ -1,3 +1,4 @@
+import type { webcrypto } from "node:crypto";
 import { exportJWK, importJWK } from "jose";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -128,7 +129,10 @@ describe("the encryption (guide 2.6.3)", () => {
   it("refuses key management RSA-OAEP-256: the key is held for RSA-OAEP only", async () => {
     const token: Answer = async () => {
       const to = await importJWK(await exportJWK(keys.client.enc.publicKey), "RSA-OAEP-256");
-      return answer({}, { encryptTo: to as CryptoKey, jweHeader: { alg: "RSA-OAEP-256" } })();
+      return answer(
+        {},
+        { encryptTo: to as webcrypto.CryptoKey, jweHeader: { alg: "RSA-OAEP-256" } },
+      )();
     };
     await refused((await exchange(token)).outcome, "decryption failed");
   });
@@ -143,7 +147,7 @@ describe("the encryption (guide 2.6.3)", () => {
   it("refuses a JWE that names our key but was encrypted to another (our sig key's public half)", async () => {
     const token: Answer = async () => {
       const to = await importJWK(await exportJWK(keys.client.sig.publicKey), "RSA-OAEP");
-      return answer({}, { encryptTo: to as CryptoKey })();
+      return answer({}, { encryptTo: to as webcrypto.CryptoKey })();
     };
     await refused((await exchange(token)).outcome, "decryption failed");
   });
@@ -197,7 +201,7 @@ describe("the signature (guide 2.6.3, 2.7)", () => {
       ext: _ext,
       ...material
     } = await exportJWK(keys.telia.enc.privateKey);
-    const encAsSigner = (await importJWK(material, "RS256")) as CryptoKey;
+    const encAsSigner = (await importJWK(material, "RS256")) as webcrypto.CryptoKey;
     await refused(
       (await exchange(answer({}, { jwsHeader: { kid: keys.telia.encKid }, signWith: encAsSigner })))
         .outcome,
