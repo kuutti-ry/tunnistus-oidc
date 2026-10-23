@@ -1,6 +1,6 @@
 {
   "name": "@kuutti-ry/tunnistus-oidc",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Telia Tunnistus relying-party kit for Node: the OpenID Connect client the broker's integration guide asks for (signed request object, private_key_jwt, encrypted ID token), discovery, key helpers, the Finnish personal identity code format, and an in-process test double of the broker.",
   "license": "MIT",
   "repository": {
