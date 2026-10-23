@@ -8,10 +8,10 @@ The package is published to npm from this repository by `.github/workflows/publi
 2. After the merge, tag the merge commit and push the tag:
 
    ```bash
-   git tag vX.Y.Z <merge commit> && git push origin vX.Y.Z
+   git fetch origin && git tag vX.Y.Z <merge commit> && git push origin vX.Y.Z
    ```
 
-3. The workflow's `check` job refuses a tag that does not name `package.json`'s version, a changelog without a dated entry for it, and a commit that is not on `main`; then it typechecks, tests, builds and checks the packed tarball as a consumer would, and hands the tarball on as an artifact. The `publish` job waits at the `npm` environment for the maintainer's approval, which therefore comes after the checks, takes nothing from the repository but that artifact, and publishes it. A version already on npm ends the run with a notice and no publish.
+3. The workflow's `check` job refuses a tag that does not name `package.json`'s version, a changelog without a dated entry for it, and a commit that is not on `main`; then it typechecks, tests, builds and checks the packed tarball as a consumer would, and hands the tarball on as an artifact. The `publish` job waits at the `npm` environment for the maintainer's approval, which therefore comes after the checks, takes nothing from the repository but that artifact, and publishes it. The approval has a week: the artifact lives seven days; after that, re-run the workflow's jobs, which build and check the tarball again and wait again. A version already on npm ends the run with a notice and no publish.
 4. Check:
 
    ```bash
@@ -25,10 +25,10 @@ The package is published to npm from this repository by `.github/workflows/publi
 A trusted publisher is an authority to publish, so the gates on it exist first.
 
 1. **Repository settings** (the maintainer's): the `npm` environment with the maintainer as its required reviewer; a tag ruleset that lets only administrators create `v*` tags; the branch rule on `main` (pull requests only, with the CI and DCO checks required). Until the environment has its reviewer, a pushed tag would publish on the strength of write access alone.
-2. **The first publish, by hand.** npm configures a trusted publisher on a package that already exists. On a machine signed in to npm as a member of `kuutti-ry` (`npm login`, with the account's second factor in its "authorization and writes" mode), from the merged commit:
+2. **The first publish, by hand.** npm configures a trusted publisher on a package that already exists. On a machine signed in to npm as a member of `kuutti-ry` (`npm login`, with the account's second factor in its "authorization and writes" mode), from the merged commit checked out:
 
    ```bash
-   out="$(mktemp -d)" && pnpm check:tarball -- --out "$out" && npm publish "$out/kuutti-ry-tunnistus-oidc-0.1.0.tgz" --access public && npm logout
+   pnpm install --frozen-lockfile && out="$(mktemp -d)" && pnpm check:tarball -- --out "$out" && npm publish "$out/kuutti-ry-tunnistus-oidc-0.1.0.tgz" --access public && npm logout
    ```
 
    `npm logout` ends the session that could publish. 0.1.0 carries no provenance; every later version does. The tag `v0.1.0` may be pushed afterwards for the record: the run finds the version on npm and ends there.

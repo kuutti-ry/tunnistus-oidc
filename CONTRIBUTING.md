@@ -23,7 +23,7 @@ Two tests need more than this repository: `src/contract.live.test.ts` reads Teli
 
 - TypeScript strict; no `any` in an exported signature. Small modules, named exports; the public surface is `src/index.ts`, `src/hetu.ts` and `src/testing/fake-telia.ts`.
 - The kit returns what Telia sent and decides nothing for the product: what of the person is kept, how often the bank is asked, logging. It logs nothing itself, and `TunnistusError` carries a reason and never a claim.
-- No personal data in the repository: the identity codes in tests are Telia's published artificial ones (individual number 900 to 999); keys are generated at run time, never committed.
+- No personal data in the repository: a well-formed identity code in a test carries an individual number from 900 to 999, Telia's artificial range; the other codes in the tests are malformed on purpose (a wrong date, check character or individual number) or Telia's own published examples. Keys are generated at run time, never committed.
 - Every commit is signed off (`git commit -s`; the Developer Certificate of Origin is the `DCO` file), and the DCO check refuses one without the trailer. `main` changes through pull requests only.
 - A new dependency is pinned by the lockfile and must be at least a day old (`pnpm-workspace.yaml`); name any install script of it in the pull request.
 

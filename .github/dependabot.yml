@@ -26,3 +26,9 @@ updates:
     groups:
       minor-and-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # The types follow the engine floor (package.json's engines: Node 22),
+      # not npm's newest major, which would let the code use what Node 22
+      # does not have.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]

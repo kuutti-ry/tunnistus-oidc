@@ -76,7 +76,11 @@ jobs:
           name: tarball
           path: ${{ runner.temp }}/tarball/kuutti-ry-tunnistus-oidc-${{ steps.version.outputs.version }}.tgz
           if-no-files-found: error
-          retention-days: 1
+          # The publish job waits for the maintainer's approval; the tarball
+          # has to outlive that wait. Overwrite: a re-run of all jobs uploads
+          # the same name again.
+          retention-days: 7
+          overwrite: true
 
   publish:
     name: publish to npm

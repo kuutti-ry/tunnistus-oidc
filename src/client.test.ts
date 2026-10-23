@@ -19,7 +19,7 @@ const claims = (overrides: Record<string, unknown> = {}) => ({
   aud: "kuutti",
   exp: 1_800_000_000,
   iat: 1_799_999_000,
-  [HETU_CLAIM]: "290793V6787",
+  [HETU_CLAIM]: "290793V900C",
   acr: LOA,
   amr: ["https://tunnistus-pp.telia.fi/uas/saml2/names/ac/oidc.aktia.1", 7],
   ...overrides,
@@ -130,7 +130,7 @@ describe("identityFromClaims", () => {
       null,
     );
     expect(identity).toEqual({
-      personalIdentityCode: "290793V6787",
+      personalIdentityCode: "290793V900C",
       subject: "2BY5CDNFBEOSUFSKNGFSY4Y3DZISGL4I",
       sessionIndex: "_cb08",
       tokenId: "72b1",
@@ -177,8 +177,8 @@ describe("identityFromClaims", () => {
     ["empty", ""],
     ["null", null],
     ["a number", 290793],
-    ["an array", ["290793V6787"]],
-    ["an object", { value: "290793V6787" }],
+    ["an array", ["290793V900C"]],
+    ["an object", { value: "290793V900C" }],
     ["a boolean", true],
   ])("refuses an identity code that is %s", (_name, value) => {
     expect(reasonOf(() => identityFromClaims(claims({ [HETU_CLAIM]: value }), null))).toBe(
