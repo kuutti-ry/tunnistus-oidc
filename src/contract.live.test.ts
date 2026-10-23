@@ -9,9 +9,9 @@ import { fakeTelia } from "./testing/fake-telia.ts";
 // what the double serves, so a change on Telia's side shows before a login
 // fails. Skipped unless asked for:
 //
-//   TELIA_CONTRACT_LIVE=1 pnpm --filter @kuutti-ry/tunnistus-oidc exec vitest run src/contract.live.test.ts
+//   TELIA_CONTRACT_LIVE=1 pnpm exec vitest run src/contract.live.test.ts
 //
-// The issuer is the client's own constant (docs/vendors/telia.md, "What
+// The issuer is the client's own constant (kuutti-app's docs/vendors/telia.md, "What
 // Telia gives us"); nothing is sent but two GETs.
 
 const LIVE = process.env.TELIA_CONTRACT_LIVE === "1";

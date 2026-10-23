@@ -1,5 +1,5 @@
 /**
- * build: dist/ for the npm tarball (ADR-017 §6). tsc compiles src/ with
+ * build: dist/ for the npm tarball (kuutti-app's ADR-017 §6). tsc compiles src/ with
  * tsconfig.build.json (declarations, tests left out); then the one thing tsc
  * leaves to us: rewriteRelativeImportExtensions turns "./client.ts" into
  * "./client.js" in the JavaScript and keeps ".ts" in the declaration files,
@@ -7,7 +7,7 @@
  * extensions, so the declarations' relative specifiers get ".js" here. The
  * workspace never reads dist/: its exports stay on src/.
  *
- * Usage: pnpm --filter @kuutti-ry/tunnistus-oidc build
+ * Usage: pnpm build
  */
 import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";

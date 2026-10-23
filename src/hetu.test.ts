@@ -240,7 +240,7 @@ describe("hetu individual number", () => {
   });
 });
 
-describe("the codes Telia's test bed returns (docs/vendors/telia.md, Pre-production test users)", () => {
+describe("the codes Telia's test bed returns (kuutti-app's docs/vendors/telia.md, Pre-production test users)", () => {
   // Verbatim from the vendor file's examples and its table of what the bed
   // returned; the outcome is what the parser says of each.
   it.each([

@@ -50,7 +50,7 @@ import {
   TELIA_TOKEN_ENDPOINT,
 } from "./testing/fake-telia.ts";
 
-// The contract with Telia Tunnistus, both ways, as docs/vendors/telia.md
+// The contract with Telia Tunnistus, both ways, as kuutti-app's docs/vendors/telia.md
 // records it (the integration guide v2.36, the cheat sheet of 2026-10-08,
 // the discovery documents read live on 2026-10-07). Each test names the
 // requirement and the section it comes from.
@@ -351,7 +351,7 @@ describe("what we send is what Telia documents", () => {
       }
     });
 
-    it("2.4.3 and ADR-016: prompt=login when the caller asks for the bank every time", () => {
+    it("2.4.3 and kuutti-app's ADR-016: prompt=login when the caller asks for the bank every time", () => {
       expect(sent.requestObject.prompt).toBe("login");
     });
 

@@ -74,7 +74,7 @@ const TELIA_HOSTS = new Set(["tunnistus.telia.fi", "tunnistus-pp.telia.fi"]);
  * The issuer as URL when it names one of Telia's two hosts, whatever its
  * scheme or port. Read through URL, as the client reads the issuer it
  * connects to: the host in any case, the trailing dot of a fully qualified
- * name (#235).
+ * name (kuutti-app#235).
  */
 function teliaHostUrl(issuer: string): URL | null {
   const url = URL.parse(issuer);

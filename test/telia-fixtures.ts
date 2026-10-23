@@ -19,7 +19,7 @@ import {
 } from "../src/client.ts";
 
 // Telia-shaped artefacts for the package's tests, built from what
-// docs/vendors/telia.md records of the broker (the endpoints, the discovery
+// kuutti-app's docs/vendors/telia.md records of the broker (the endpoints, the discovery
 // document as read live on 2026-10-07, the JWKS, the ID token, the FTN
 // claims), with keys generated in the test. Nothing here is fetched. It lives
 // outside src/ so it is neither shipped nor counted in the coverage of the
@@ -28,9 +28,9 @@ import {
 export const ISSUER = TELIA_PREPRODUCTION_ISSUER;
 /** Artificial; Telia assigns the real one at registration. */
 export const CLIENT_ID = "5f0c0a1e-7a1b-4c2d-8e3f-000000000001";
-/** docs/vendors/telia.md "What Telia needs from us": staging's registered redirect URI. */
+/** kuutti-app's docs/vendors/telia.md "What Telia needs from us": staging's registered redirect URI. */
 export const REDIRECT_URI = "https://api.staging.kuutti.app/auth/callback";
-/** docs/vendors/telia.md "The flow" (claims): the bank as a URI under /uas/saml2/names/ac/. */
+/** kuutti-app's docs/vendors/telia.md "The flow" (claims): the bank as a URI under /uas/saml2/names/ac/. */
 export const AKTIA_AMR = `${ISSUER}/saml2/names/ac/oidc.aktia.1`;
 /** An artificial test code (individual number 999: a test identity, never a person's). */
 export const TEST_HETU = "010170-999R";
@@ -48,7 +48,7 @@ export const NOT_A_KEY_PEM = armoured("PRIVATE KEY", "AAAA");
 export const nowSeconds = () => Math.floor(Date.now() / 1000);
 
 /**
- * docs/vendors/telia.md "What Telia gives us": the endpoints under the issuer,
+ * kuutti-app's docs/vendors/telia.md "What Telia gives us": the endpoints under the issuer,
  * and what both hosts' discovery documents offered when read live on
  * 2026-10-07 (private_key_jwt, RS256 request objects and ID tokens, RSA-OAEP
  * with A128GCM or A128CBC-HS256; no acr_values_supported, no ui_locales_supported).
@@ -108,7 +108,7 @@ export async function makeKeys(): Promise<Keys> {
   };
 }
 
-/** docs/vendors/telia.md "What Telia gives us": the pre-production JWKS carries one `sig` and one `enc` key. */
+/** kuutti-app's docs/vendors/telia.md "What Telia gives us": the pre-production JWKS carries one `sig` and one `enc` key. */
 export async function documentedJwks(keys: Keys): Promise<{ keys: JWK[] }> {
   return {
     keys: [
@@ -129,7 +129,7 @@ export async function documentedJwks(keys: Keys): Promise<{ keys: JWK[] }> {
 }
 
 /**
- * docs/vendors/telia.md "The flow" (claims for a Finnish user through an FTN
+ * kuutti-app's docs/vendors/telia.md "The flow" (claims for a Finnish user through an FTN
  * method), in the shape guide 2.6.4 gives: `aud` an array with `azp`, the
  * person under the FTN OIDs.
  */
