@@ -4,7 +4,7 @@ Kuutti adopts the [Contributor Covenant, version 2.1](https://www.contributor-co
 
 In short: be considerate and respectful, assume good faith, welcome people of every background and identity, and keep criticism about the work. Harassment, personal attacks, sexualised language or imagery, and publishing someone's private information are not acceptable here.
 
-Kuutti is a dating service built on bank-verified identity. Contributors will sometimes handle reports, screenshots or data about real people. Treat all of it as confidential, never post it in a public issue, and follow [SECURITY.md](SECURITY.md) for anything that looks like a vulnerability.
+This kit handles bank-verified identity. A real personal identity code, a real token or a private key never goes into a pull request, an issue or a report: the identity codes in tests are Telia's artificial ones (`CONTRIBUTING.md`), and anything that looks like a vulnerability follows [SECURITY.md](SECURITY.md).
 
 ## Reporting
 
