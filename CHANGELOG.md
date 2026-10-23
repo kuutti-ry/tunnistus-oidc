@@ -2,6 +2,14 @@
 
 Every notable change to `@kuutti-ry/tunnistus-oidc`, newest first, in the shape of [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html), `0.y.z` until the API has settled against Telia's production service. A release is the tag `vX.Y.Z` on this repository (`RELEASING.md`). The package is unofficial: written by Kuutti ry, not by Telia.
 
+## [0.1.1] - 2026-10-23
+
+The first release published by the workflow (`RELEASING.md`): npm trusted publishing, with provenance naming this repository, `publish.yml` and the commit. 0.1.0 was published by hand, since npm registers a trusted publisher only on a package that exists. Nothing of the library changed: `dist/` is 0.1.0's, built from the same sources.
+
+### Fixed
+
+- `publish.yml`: after publishing, the check that the version is on the registry asks again for up to two minutes, since the registry can take a moment to show a version it has accepted; before, that could fail a job whose publish had succeeded.
+
 ## [0.1.0] - 2026-10-22
 
 The first release: the client [Kuutti](https://github.com/kuutti-ry/kuutti-app) has run against Telia's pre-production bed since 2026-10-08, taken out of the application on that day (its ADR-017), hardened since, and given this repository of its own on 2026-10-22; the history came with it.

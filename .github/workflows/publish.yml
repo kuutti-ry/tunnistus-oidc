@@ -112,4 +112,15 @@ jobs:
           : "${ACTIONS_ID_TOKEN_REQUEST_URL:?the job has no OIDC token (id-token: write)}"
           npm --version
           npm publish "$RUNNER_TEMP/tarball/kuutti-ry-tunnistus-oidc-$VERSION.tgz" --provenance --access public
-          npm view "@kuutti-ry/tunnistus-oidc@$VERSION" version dist.attestations.url
+          # The registry can take a moment to show a version it has accepted, and
+          # a miss here would fail a job whose publish succeeded: ask again, up
+          # to two minutes, before giving up.
+          for attempt in $(seq 1 12); do
+            if npm view "@kuutti-ry/tunnistus-oidc@$VERSION" version dist.attestations.url; then
+              exit 0
+            fi
+            echo "not on the registry yet (attempt $attempt of 12); waiting 10 s"
+            sleep 10
+          done
+          echo "published, but the registry has not shown @kuutti-ry/tunnistus-oidc@$VERSION within two minutes: https://www.npmjs.com/package/@kuutti-ry/tunnistus-oidc" >&2
+          exit 1
