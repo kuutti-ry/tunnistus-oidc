@@ -18,7 +18,7 @@ The package is published to npm from this repository by `.github/workflows/publi
    npm view @kuutti-ry/tunnistus-oidc@X.Y.Z version dist.attestations.url
    ```
 
-   The attestations URL is the provenance; the package page shows the badge.
+   The attestations URL is the provenance; the package page shows the badge. npm processes an accepted publish for some minutes before the version can be read back (0.1.1 took four); the job waits up to ten minutes for that and ends with a warning rather than a failure if the registry is slower, since `npm publish` has already printed the version it accepted.
 
 ## Once, before 0.1.0, in this order
 
