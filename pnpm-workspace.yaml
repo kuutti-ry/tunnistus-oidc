@@ -2,4 +2,8 @@
 
 # Supply chain: a version must be at least one day old before pnpm installs it
 # (pnpm's default, stated explicitly). Exclusions are a decision, not a convenience.
+# Stating it also makes it strict since pnpm 12.3: with no version old enough, a
+# refusal rather than a fallback. On 12.3.2 to 12.4.1 strict refused Dependabot's
+# `update --no-save` outright, so no security update could open
+# (dependabot/dependabot-core#16375): packageManager stays past them.
 minimumReleaseAge: 1440

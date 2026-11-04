@@ -2,8 +2,12 @@ version: 2
 
 # Monthly, and a release is proposed only once it is seven days old (cooldown;
 # GitHub's default is three): most malicious releases are found and pulled
-# within days. Security updates skip both and open when the alert does. What
-# is added by hand meets pnpm's one-day minimumReleaseAge (pnpm-workspace.yaml).
+# within days. Security updates skip both and open when the alert does, if the
+# fix is within what the package's parents ask for and it is locked on one major.
+# For the rest the job ends in security_update_not_possible
+# (dependabot/dependabot-core#16434), and the fix is an override in
+# pnpm-workspace.yaml. What is added by hand meets pnpm's one-day
+# minimumReleaseAge, in the same file.
 updates:
   # Actions are pinned to commit SHAs; Dependabot bumps the SHA and the version comment together.
   - package-ecosystem: "github-actions"
