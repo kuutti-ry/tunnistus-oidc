@@ -2,6 +2,19 @@
 
 Every notable change to `@kuutti-ry/tunnistus-oidc`, newest first, in the shape of [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html), `0.y.z` until the API has settled against Telia's production service. A release is the tag `vX.Y.Z` on this repository (`RELEASING.md`). The package is unofficial: written by Kuutti ry, not by Telia.
 
+## [0.1.2] - 2026-11-04
+
+Nothing of the library changed: `dist/` is 0.1.1's, byte for byte, built from the same sources.
+
+### Changed
+
+- The optional `hono` peer dependency, which only `@kuutti-ry/tunnistus-oidc/testing` needs, asks for `^4.13.14` instead of `^4.13.13`.
+
+### Fixed
+
+- `publish.yml`: after publishing, the check that the version is on the registry waits for up to ten minutes and ends with a warning rather than a failure if the registry is slower, since `npm publish` has already printed the version it accepted; 0.1.1's job went red after a successful publish.
+- The repository's pnpm is 12.16.1. 12.4.1 refused the command Dependabot runs for a transitive package, so a security alert on one could open no pull request.
+
 ## [0.1.1] - 2026-10-23
 
 The first release published by the workflow (`RELEASING.md`): npm trusted publishing, with provenance naming this repository, `publish.yml` and the commit. 0.1.0 was published by hand, since npm registers a trusted publisher only on a package that exists. Nothing of the library changed: `dist/` is 0.1.0's, built from the same sources.
