@@ -9,16 +9,23 @@
  * The install takes the dependencies from the registry as a consumer would,
  * but without their lifecycle scripts (none of them needs one, and a script is
  * how a bad release runs code) and no release younger than a day (the same
- * quarantine as pnpm-workspace.yaml's minimumReleaseAge).
+ * quarantine as pnpm-workspace.yaml's minimumReleaseAge). Their code runs with
+ * this process's file access, so the tarball is digested right after pnpm pack
+ * and compared at the end, in this process's memory: a release among them that
+ * put another file under the tarball's name fails the check, and the file goes.
+ * The digest is printed in npm's dist.integrity form, the one
+ * `npm view <package>@<version> dist.integrity` shows once published.
  *
  * Usage: node scripts/check-tarball.ts [--out <dir>]
- *   --out keeps the tarball in <dir> (the publish job publishes that file);
- *   without it the tarball goes with the temporary directory.
+ *   --out keeps the tarball in <dir> (the publish job publishes that file, once
+ *   its digest is the one this check passed); without it the tarball goes with
+ *   the temporary directory.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { assertIntegrity, integrityOf } from "./integrity.ts";
 
 const pkgDir = resolve(import.meta.dirname, "..");
 const manifest = JSON.parse(readFileSync(join(pkgDir, "package.json"), "utf8")) as {
@@ -113,6 +120,7 @@ try {
   run("pnpm", ["pack", "--pack-destination", packDir], pkgDir);
   const tarball = join(packDir, tarballName);
   if (!existsSync(tarball)) throw new Error(`pnpm pack did not write ${tarballName} to ${packDir}`);
+  const packed = integrityOf(tarball);
 
   const consumer = join(work, "consumer");
   mkdirSync(consumer);
@@ -161,9 +169,18 @@ try {
     ),
   );
   run(join(pkgDir, "node_modules", ".bin", "tsc"), ["-p", "tsconfig.json"], consumer);
+
+  try {
+    assertIntegrity(tarball, packed);
+  } catch (error) {
+    // Nothing publishes a file that failed the check, by hand or by name.
+    rmSync(tarball, { force: true });
+    throw error;
+  }
   console.log(
     `ok: ${tarballName} installs, logs in against the double, and type-checks under nodenext`,
   );
+  console.log(`integrity: ${packed}`);
 } finally {
   rmSync(work, { recursive: true, force: true });
 }

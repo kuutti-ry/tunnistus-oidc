@@ -11,8 +11,11 @@ name: Publish
 # out, takes that one artifact and publishes it by npm trusted publishing: npm
 # exchanges the job's OIDC token itself, no token is stored here, and the
 # registry records provenance naming this repository, this workflow and the
-# commit. No cache is restored: a release builds from the lockfile and the
-# registry alone.
+# commit. The tarball's digest, taken in `check` once the consumer run has
+# passed and carried as a job output, is what `publish` holds the artifact to
+# before publishing and the registry to after: nothing that ran in `check`, a
+# dependency from the registry included, puts another file under the name. No
+# cache is restored: a release builds from the lockfile and the registry alone.
 
 on:
   push:
@@ -28,6 +31,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       published: ${{ steps.version.outputs.published }}
+      integrity: ${{ steps.tarball.outputs.integrity }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -70,7 +74,17 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm test
-      - run: pnpm check:tarball -- --out "$RUNNER_TEMP/tarball"
+      - name: Check the packed tarball as a consumer sees it, and name its digest
+        id: tarball
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          pnpm check:tarball -- --out "$RUNNER_TEMP/tarball"
+          # The digest of the file the check passed, in npm's dist.integrity
+          # form: the publish job holds the artifact, then the registry, to it.
+          integrity="sha512-$(openssl dgst -sha512 -binary "$RUNNER_TEMP/tarball/kuutti-ry-tunnistus-oidc-$VERSION.tgz" | base64 -w0)"
+          echo "integrity=$integrity" >> "$GITHUB_OUTPUT"
+          echo "integrity: $integrity"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: tarball
@@ -101,10 +115,23 @@ jobs:
         with:
           name: tarball
           path: ${{ runner.temp }}/tarball
+      - name: The artifact is the tarball the check passed
+        env:
+          VERSION: ${{ needs.check.outputs.version }}
+          INTEGRITY: ${{ needs.check.outputs.integrity }}
+        run: |
+          : "${INTEGRITY:?the check job named no digest}"
+          actual="sha512-$(openssl dgst -sha512 -binary "$RUNNER_TEMP/tarball/kuutti-ry-tunnistus-oidc-$VERSION.tgz" | base64 -w0)"
+          if [ "$actual" != "$INTEGRITY" ]; then
+            echo "::error::the artifact is $actual; the check passed $INTEGRITY" >&2
+            exit 1
+          fi
+          echo "the artifact is the tarball the check passed: $INTEGRITY"
 
       - name: Publish the checked tarball with provenance
         env:
           VERSION: ${{ needs.check.outputs.version }}
+          INTEGRITY: ${{ needs.check.outputs.integrity }}
         run: |
           # npm exchanges the job's OIDC token itself (trusted publishing) and
           # reads ACTIONS_ID_TOKEN_REQUEST_URL to do it; without the variable
@@ -116,9 +143,16 @@ jobs:
           # registry then processes it for some minutes (0.1.1 took four) before
           # it can be read back. Read it back for the record, up to ten minutes,
           # and warn rather than fail if the registry is slower still: the
-          # publish is done either way.
+          # publish is done either way. What the registry holds under the
+          # version has to be the tarball the check passed; another file there
+          # is an error, however it got there.
           for attempt in $(seq 1 60); do
-            if npm view "@kuutti-ry/tunnistus-oidc@$VERSION" version dist.attestations.url 2>/dev/null; then
+            if integrity="$(npm view "@kuutti-ry/tunnistus-oidc@$VERSION" dist.integrity 2>/dev/null)" && [ -n "$integrity" ]; then
+              if [ "$integrity" != "$INTEGRITY" ]; then
+                echo "::error::the registry holds $integrity under $VERSION, not the tarball the check passed ($INTEGRITY)" >&2
+                exit 1
+              fi
+              npm view "@kuutti-ry/tunnistus-oidc@$VERSION" version dist.integrity dist.attestations.url
               exit 0
             fi
             echo "not on the registry yet (attempt $attempt of 60); waiting 10 s"
