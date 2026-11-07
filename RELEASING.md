@@ -11,14 +11,14 @@ The package is published to npm from this repository by `.github/workflows/publi
    git fetch origin && git tag vX.Y.Z <merge commit> && git push origin vX.Y.Z
    ```
 
-3. The workflow's `check` job refuses a tag that does not name `package.json`'s version, a changelog without a dated entry for it, and a commit that is not on `main`; then it typechecks, tests, builds and checks the packed tarball as a consumer would, and hands the tarball on as an artifact. The `publish` job waits at the `npm` environment for the maintainer's approval, which therefore comes after the checks, takes nothing from the repository but that artifact, and publishes it. The approval has a week: the artifact lives seven days; after that, re-run the workflow's jobs, which build and check the tarball again and wait again. A version already on npm ends the run with a notice and no publish.
+3. The workflow's `check` job refuses a tag that does not name `package.json`'s version, a changelog without a dated entry for it, and a commit that is not on `main`; then it typechecks, tests, builds and checks the packed tarball as a consumer would, and hands the tarball on as an artifact, with its digest as a job output. The `publish` job waits at the `npm` environment for the maintainer's approval, which therefore comes after the checks, takes nothing from the repository but that artifact, refuses it unless its digest is the check's, publishes it, and reads the version back against the same digest. The approval has a week: the artifact lives seven days; after that, re-run the workflow's jobs, which build and check the tarball again and wait again. A version already on npm ends the run with a notice and no publish.
 4. Check:
 
    ```bash
-   npm view @kuutti-ry/tunnistus-oidc@X.Y.Z version dist.attestations.url
+   npm view @kuutti-ry/tunnistus-oidc@X.Y.Z version dist.integrity dist.attestations.url
    ```
 
-   The attestations URL is the provenance; the package page shows the badge. npm processes an accepted publish for some minutes before the version can be read back (0.1.1 took four); the job waits up to ten minutes for that and ends with a warning rather than a failure if the registry is slower, since `npm publish` has already printed the version it accepted.
+   `dist.integrity` is the digest `pnpm check:tarball` printed and the job's log shows: the file on the registry is the one the check passed. The attestations URL is the provenance; the package page shows the badge. npm processes an accepted publish for some minutes before the version can be read back (0.1.1 took four); the job waits up to ten minutes for that and ends with a warning rather than a failure if the registry is slower, since `npm publish` has already printed the version it accepted.
 
 ## Once, before 0.1.0, in this order
 

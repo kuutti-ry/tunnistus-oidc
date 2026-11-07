@@ -5,7 +5,8 @@ import { defineConfig } from "vitest/config";
 // itself when the mock is not up (`pnpm env:up` in kuutti-ry/kuutti-app).
 export default defineConfig({
   test: {
-    include: ["src/**/*.test.ts"],
+    // The release scripts' helpers are tested too; the floors below are the library's.
+    include: ["src/**/*.test.ts", "scripts/**/*.test.ts"],
     environment: "node",
     testTimeout: 30_000,
     // `pnpm test:coverage`, in CI too; the floors are the kit's own.

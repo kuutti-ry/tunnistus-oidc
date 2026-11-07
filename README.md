@@ -80,7 +80,7 @@ const person = await client.completeLogin({ callbackUrl: back, state, nonce });
 telia.misbehave.plainIdToken = true; // and so on; see `Misbehaviour`
 ```
 
-`src/client.telia.test.ts` is the conformance suite: each requirement of the guide is either produced by the client and checked by the double, or produced wrongly by the double and refused by the client. `pnpm check:tarball` is the consumer's view: the package built, packed, installed with npm outside the repository, this README's login run from the installed files and a consumer type-checked under `nodenext`; it runs in CI and before every publish.
+`src/client.telia.test.ts` is the conformance suite: each requirement of the guide is either produced by the client and checked by the double, or produced wrongly by the double and refused by the client. `pnpm check:tarball` is the consumer's view: the package built, packed, installed with npm outside the repository, this README's login run from the installed files, a consumer type-checked under `nodenext`, and the tarball's bytes held through all of it; it runs in CI and before every publish.
 
 ## Conformance
 

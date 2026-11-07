@@ -2,6 +2,12 @@
 
 Every notable change to `@kuutti-ry/tunnistus-oidc`, newest first, in the shape of [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html), `0.y.z` until the API has settled against Telia's production service. A release is the tag `vX.Y.Z` on this repository (`RELEASING.md`). The package is unofficial: written by Kuutti ry, not by Telia.
 
+## [Unreleased]
+
+### Fixed
+
+- `check:tarball` digests the tarball right after `pnpm pack` and compares it once the consumer run has passed, in its own memory, and `publish.yml` holds the artifact and then the registry's `dist.integrity` to that digest. The consumer run installs the dependencies from the registry and runs them with the check's own file access, so a bad release among them could have put another file under the tarball's name before the publish job uploaded it by that name. Found by the security audit of 2026-11-06 ([kuutti-ry/kuutti-app#609](https://github.com/kuutti-ry/kuutti-app/issues/609)); nothing of the library changed.
+
 ## [0.1.2] - 2026-11-04
 
 Nothing of the library changed: `dist/` is 0.1.1's, byte for byte, built from the same sources.
