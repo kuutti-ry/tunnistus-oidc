@@ -11,7 +11,7 @@ import { fakeTelia } from "./testing/fake-telia.ts";
 //
 //   TELIA_CONTRACT_LIVE=1 pnpm exec vitest run src/contract.live.test.ts
 //
-// The issuer is the client's own constant (kuutti-app's docs/vendors/telia.md, "What
+// The issuer is the client's own constant (kumpa-app's docs/vendors/telia.md, "What
 // Telia gives us"); nothing is sent but two GETs.
 
 const LIVE = process.env.TELIA_CONTRACT_LIVE === "1";

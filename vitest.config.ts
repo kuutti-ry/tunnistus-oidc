@@ -2,7 +2,7 @@ import { defineConfig } from "vitest/config";
 
 // No network and no database: the Telia dialect runs against the in-process
 // double; the one test that talks to the mock bank of Kuutti's docker compose skips
-// itself when the mock is not up (`pnpm env:up` in kuutti-ry/kuutti-app).
+// itself when the mock is not up (`pnpm env:up` in kuutti-ry/kumpa-app).
 export default defineConfig({
   test: {
     // The release scripts' helpers are tested too; the floors below are the library's.

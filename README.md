@@ -2,7 +2,7 @@
 
 A relying-party kit for [Telia Tunnistus](https://github.com/telia-oss/tunnistus), the Finnish Trust Network identification broker, for Node 22+. It does what Telia's integration guide (v2.36) asks of a client and what no sample does: it ships a faithful in-process double of the broker, so the whole dialect is tested without a contract, a network or a port.
 
-MIT-licensed (see `LICENSE`), so that the next Finnish relying party can take it; written for [Kuutti](https://github.com/kuutti-ry/kuutti-app), the association's dating app, which is its first consumer. Unofficial: written by Kuutti ry, not by Telia, and Telia Tunnistus is Telia's mark. Published to npm from this repository; every version after 0.1.0 carries provenance (`RELEASING.md`); `CHANGELOG.md` lists the versions.
+MIT-licensed (see `LICENSE`), so that the next Finnish relying party can take it; written for [Kumpa](https://github.com/kuutti-ry/kumpa-app), the dating app of the association Kuutti ry, which is its first consumer. Unofficial: written by Kuutti ry, not by Telia, and Telia Tunnistus is Telia's mark. Published to npm from this repository; every version after 0.1.0 carries provenance (`RELEASING.md`); `CHANGELOG.md` lists the versions.
 
 ## Install
 

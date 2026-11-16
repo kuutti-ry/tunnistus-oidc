@@ -6,7 +6,7 @@ Every notable change to `@kuutti-ry/tunnistus-oidc`, newest first, in the shape 
 
 ### Fixed
 
-- `check:tarball` digests the tarball right after `pnpm pack` and compares it once the consumer run has passed, in its own memory, and `publish.yml` holds the artifact and then the registry's `dist.integrity` to that digest. The consumer run installs the dependencies from the registry and runs them with the check's own file access, so a bad release among them could have put another file under the tarball's name before the publish job uploaded it by that name. Found by the security audit of 2026-11-06 ([kuutti-ry/kuutti-app#609](https://github.com/kuutti-ry/kuutti-app/issues/609)); nothing of the library changed.
+- `check:tarball` digests the tarball right after `pnpm pack` and compares it once the consumer run has passed, in its own memory, and `publish.yml` holds the artifact and then the registry's `dist.integrity` to that digest. The consumer run installs the dependencies from the registry and runs them with the check's own file access, so a bad release among them could have put another file under the tarball's name before the publish job uploaded it by that name. Found by the security audit of 2026-11-06 ([kuutti-ry/kumpa-app#609](https://github.com/kuutti-ry/kumpa-app/issues/609)); nothing of the library changed.
 
 ## [0.1.2] - 2026-11-04
 
@@ -31,7 +31,7 @@ The first release published by the workflow (`RELEASING.md`): npm trusted publis
 
 ## [0.1.0] - 2026-10-22
 
-The first release: the client [Kuutti](https://github.com/kuutti-ry/kuutti-app) has run against Telia's pre-production bed since 2026-10-08, taken out of the application on that day (its ADR-017), hardened since, and given this repository of its own on 2026-10-22; the history came with it.
+The first release: the client [Kuutti](https://github.com/kuutti-ry/kumpa-app) has run against Telia's pre-production bed since 2026-10-08, taken out of the application on that day (its ADR-017), hardened since, and given this repository of its own on 2026-10-22; the history came with it.
 
 ### Added
 
