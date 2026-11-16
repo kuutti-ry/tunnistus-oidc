@@ -17,7 +17,7 @@ pnpm check:tarball # the package as a consumer sees it: built, packed, installed
 
 `src/client.telia.test.ts` is the conformance suite: each requirement of the guide is produced by the client and checked by the double (`src/testing/fake-telia.ts`), or produced wrongly by the double and refused by the client. A requirement gets its test on both sides; a bug gets the test that failed first, in the same change.
 
-Two tests need more than this repository: `src/contract.live.test.ts` reads Telia's public pre-production metadata and runs only with `TELIA_CONTRACT_LIVE=1`; `src/client.mock-idp.test.ts` runs the plain dialect against the mock bank of Kuutti's local stack (`pnpm env:up` in [kuutti-ry/kuutti-app](https://github.com/kuutti-ry/kuutti-app)) and skips itself when the mock is not up.
+Two tests need more than this repository: `src/contract.live.test.ts` reads Telia's public pre-production metadata and runs only with `TELIA_CONTRACT_LIVE=1`; `src/client.mock-idp.test.ts` runs the plain dialect against the mock bank of Kuutti's local stack (`pnpm env:up` in [kuutti-ry/kumpa-app](https://github.com/kuutti-ry/kumpa-app)) and skips itself when the mock is not up.
 
 ## Rules
 

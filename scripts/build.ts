@@ -1,5 +1,5 @@
 /**
- * build: dist/ for the npm tarball (kuutti-app's ADR-017 §6). tsc compiles src/ with
+ * build: dist/ for the npm tarball (kumpa-app's ADR-017 §6). tsc compiles src/ with
  * tsconfig.build.json (declarations, tests left out); then the one thing tsc
  * leaves to us: rewriteRelativeImportExtensions turns "./client.ts" into
  * "./client.js" in the JavaScript and keeps ".ts" in the declaration files,
